@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/envy" />
+            <option value="$PROJECT_DIR$/envy-ksp" />
+            <option value="$PROJECT_DIR$/envy-tests" />
+          </set>
+        </option>
+        <option name="myGradleHome" value="/usr/local/Cellar/gradle/9.6.1/libexec" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

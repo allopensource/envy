@@ -1,0 +1,13 @@
+[versions]
+kotlin = "2.2.0"
+ksp = "2.2.0-2.0.2"
+junit = "5.13.4"
+ktlint = "14.2.0"
+
+[libraries]
+junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
