@@ -36,6 +36,7 @@ dependencies {
         environment("short", 1)
         environment("boolean", true)
         environment("nullString", "I am not a null string.")
+        environment("incorrectInt", "I should not be a string.")
     }
 
 }
