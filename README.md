@@ -1,75 +1,19 @@
-# envy
+<p align="center">
+  <img src="assets/logo.png" alt="envy logo" width="512" />
+</p>
+<h1 align="center">Type-safe, reflection-free environment configuration for Kotlin, powered by KSP.</h1>
 
-Type-safe environment variable loading for Kotlin, powered by KSP.
+### Usage: Super simple and easy to use.
 
-Annotate a configuration class with `@Envied` and envy generates loaders at compile time that read `System.getenv()` and construct your config. At runtime, call `Envy.load<YourConfig>()` to get a cached instance.
-
-## Features
-
-- Compile-time code generation via KSP — no reflection at runtime
-- Supports Kotlin primitives and nullable types
-- `@EnviedDefault` for fallback values when an environment variable is unset
-- Singleton caching — repeated `load()` calls return the same instance
-- Works with primary-constructor properties (`val` / `var`)
-
-## Resolution order
-
-For each property, envy resolves the value in this order:
-
-1. **Environment variable** — `System.getenv(propertyName)` when set
-2. **`@EnviedDefault`** — compile-time default from the annotation when the variable is unset
-3. **`null`** — for nullable properties with no env var and no default
-
-Non-null properties without an environment variable or `@EnviedDefault` cause `EnvyConfigurationException` at load time. Kotlin constructor default values are not used by generated loaders.
-
-If a property may or may not be present in environment variables, declare it as nullable.
-
-## Supported types
-
-| Type | Non-null | Nullable |
-|------|----------|----------|
-| `String` | `System.getenv("name")!!` | `System.getenv("name")` |
-| `Int` | `toInt()` | `?.toInt()` |
-| `Long` | `toLong()` | `?.toLong()` |
-| `Double` | `toDouble()` | `?.toDouble()` |
-| `Float` | `toFloat()` | `?.toFloat()` |
-| `Boolean` | `toBoolean()` | `?.toBoolean()` |
-| `Byte` | `toByte()` | `?.toByte()` |
-| `Short` | `toShort()` | `?.toShort()` |
-| `Char` | `toCharArray().first()` | `?.toCharArray()?.firstOrNull()` |
-
-Environment variable names match property names exactly. Invalid values (for example, a non-numeric string for an `Int` property) also throw `EnvyConfigurationException`.
-
-## Usage
-
-### 1. Add dependencies
-
-```kotlin
-plugins {
-    id("com.google.devtools.ksp") version "2.2.0-2.0.2"
-}
-
-dependencies {
-    implementation("io.github.allopensource:envy:0.1.0")
-    ksp("io.github.allopensource:envy-ksp:0.1.0")
-}
+Assuming the following environment variables.
+```bash
+export databaseUrl="postgres://localhost/mydb"
+export port=5432
+export apiKey="my-api-key"
 ```
 
-For local development in this repository, use project dependencies:
-
+1. Declare a configuration class with the environment variables and annotate it with envy annotations.
 ```kotlin
-dependencies {
-    implementation(project(":envy"))
-    ksp(project(":envy-ksp"))
-}
-```
-
-### 2. Define a configuration class
-
-```kotlin
-import io.github.allopensource.envy.Envied
-import io.github.allopensource.envy.EnviedDefault
-
 @Envied
 class AppConfig(
     val databaseUrl: String,
@@ -79,6 +23,63 @@ class AppConfig(
     val apiKey: String?,
 )
 ```
+
+2. Load the configuration class with envy.
+```kotlin
+val config = Envy.load<AppConfig>()
+// databaseUrl = "postgres://localhost/mydb"    (from env)
+// port = 5432                                  (from env)
+// debug = false                                (from @EnviedDefault)
+// apiKey = null                                (nullable, no env var)
+```
+
+### Dependencies
+
+```kotlin
+plugins {
+    id("com.google.devtools.ksp") version "2.2.0-2.0.2" // to enable KSP
+}
+
+dependencies {
+    implementation("io.github.allopensource:envy:0.1.0") // runtime component
+    ksp("io.github.allopensource:envy-ksp:0.1.0")        // compiletime component
+}
+```
+
+## Features
+
+- Compile-time code generation via KSP — no reflection at runtime
+- Supports Kotlin primitives and nullable types
+- Supports default values with `@EnviedDefault`
+- Singleton caching — repeated `load()` calls return the same instance
+
+## Resolution order
+
+For each property, envy resolves the value in this order:
+
+1. **Environment variable** — `System.getenv(propertyName)` when set
+2. **`@EnviedDefault`** — compile-time default from the annotation when the variable is unset
+3. **`null`** — for nullable properties with no environment variable set and no default value
+
+⚠️ Non-null properties without an environment variable or `@EnviedDefault` cause `EnvyConfigurationException` at runtime. Generated loaders do not use Kotlin constructor default values. If a property may or may not be present in environment variables, declare it as nullable.
+
+## Supported types
+
+| Type |
+|------|
+| `String` |
+| `Int` |
+| `Long` |
+| `Double` |
+| `Float` |
+| `Boolean`
+| `Byte` |
+| `Short` |
+| `Char` |
+
+Environment variable names match property names exactly. Invalid values (for example, a non-numeric string for an `Int` property) also throw `EnvyConfigurationException`.
+
+## Usage
 
 The class must have a primary constructor whose parameters are declared as `val` or `var` properties.
 
@@ -95,36 +96,13 @@ println(config.databaseUrl)
 
 `Envy.load()` can be called multiple times; it returns the same cached instance.
 
-### Example
-
-Given:
-
-```bash
-export databaseUrl="postgres://localhost/mydb"
-export port=5432
-```
-
-```kotlin
-@Envied
-class AppConfig(
-    val databaseUrl: String,
-    val port: Int,
-    @EnviedDefault("false")
-    val debug: Boolean,
-    val apiKey: String?,
-)
-
-val config = Envy.load<AppConfig>()
-// databaseUrl = "postgres://localhost/mydb"  (from env)
-// port = 5432                                  (from env)
-// debug = false                                (from @EnviedDefault)
-// apiKey = null                                (nullable, no env var)
-```
 
 ## How it works
 
-1. **Compile time** — KSP scans classes annotated with `@Envied` and generates an `EnvyLoader` implementation per class (e.g. `EnvyLoaderForAppConfig`). A `META-INF/services/io.github.allopensource.envy.EnvyLoader` file registers all loaders.
-2. **Runtime** — `Envy` discovers loaders via `ServiceLoader`, maps them by config type, and caches constructed instances.
+1. **Compile time** — [KSP](https://kotlinlang.org/docs/ksp-overview.html) scans classes annotated with `@Envied` and generates an `EnvyLoader` implementation per class. The loader is a source code file (not class file) generated in `build/generated/ksp`, the corresponding class files are generated under `build/classes`. 
+The loader contains the code which reads the environment variables and returns the instance of the annotated class. An entry for the loader is added to the  `META-INF/services/io.github.allopensource.envy.EnvyLoader` file.
+2. **Runtime** — `Envy` discovers loaders via [ServiceLoader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/ServiceLoader.html) on startup. When `Envy.load..` is called, the relevant loader is identified by the config type and used to construct the instance.
+The instance is cached so that .load() can be called multiple times in the application.
 
 Classes without a generated loader, missing required values, or invalid env values cause `EnvyConfigurationException` when you call `Envy.load()`.
 
@@ -145,7 +123,7 @@ Requires JDK 11+.
 ./gradlew build
 
 # Run tests
-./gradlew check
+./gradlew test
 
 # Format Kotlin sources
 ./gradlew ktlintFormat
@@ -155,6 +133,15 @@ Requires JDK 11+.
 ```
 
 Test reports are written to `envy-tests/build/reports/tests/test/index.html`. JaCoCo output is in `build/reports/jacoco/jacocoRootReport/html/`.
+
+## Community & feedback
+
+If you're using envy — or trying it out — I'd love to hear from you. Feedback helps prioritize fixes, new features, and documentation.
+
+- **[Issues](https://github.com/allopensource/envy/issues)** — report bugs, request features, or ask questions
+- **[Discussions](https://github.com/allopensource/envy/discussions)** — share how you're using envy, suggest improvements, or say hello
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding guidelines, and how to submit pull requests.
 
 ## License
 
