@@ -10,8 +10,7 @@ Thanks for stopping by. Any kind of help is welcome — a bug report, an idea, a
 For bigger changes, a quick issue first helps. Small fixes can go straight to a PR.
 
 ## Hacking locally
-
-Needs JDK 11+.
+Needs JDK 17+.
 
 ```bash
 git clone https://github.com/allopensource/envy.git

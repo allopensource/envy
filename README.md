@@ -41,8 +41,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.allopensource:envy:0.1.0") // runtime component
-    ksp("io.github.allopensource:envy-ksp:0.1.0")        // compiletime component
+    implementation("io.github.allopensource:envy:0.1.0-SNAPSHOT") // runtime component
+    ksp("io.github.allopensource:envy-ksp:0.1.0-SNAPSHOT")        // compiletime component
 }
 ```
 
@@ -101,7 +101,7 @@ println(config.databaseUrl)
 
 1. **Compile time** — [KSP](https://kotlinlang.org/docs/ksp-overview.html) scans classes annotated with `@Envied` and generates an `EnvyLoader` implementation per class. The loader is a source code file (not class file) generated in `build/generated/ksp`, the corresponding class files are generated under `build/classes`. 
 The loader contains the code which reads the environment variables and returns the instance of the annotated class. An entry for the loader is added to the  `META-INF/services/io.github.allopensource.envy.EnvyLoader` file.
-2. **Runtime** — `Envy` discovers loaders via [ServiceLoader](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/ServiceLoader.html) on startup. When `Envy.load..` is called, the relevant loader is identified by the config type and used to construct the instance.
+2. **Runtime** — `Envy` discovers loaders via [ServiceLoader](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ServiceLoader.html) on startup. When `Envy.load..` is called, the relevant loader is identified by the config type and used to construct the instance.
 The instance is cached so that .load() can be called multiple times in the application.
 
 Classes without a generated loader, missing required values, or invalid env values cause `EnvyConfigurationException` when you call `Envy.load()`.
@@ -115,8 +115,7 @@ Classes without a generated loader, missing required values, or invalid env valu
 | `envy-tests` | Integration tests |
 
 ## Development
-
-Requires JDK 11+.
+Requires JDK 17+.
 
 ```bash
 # Build all modules
