@@ -115,7 +115,6 @@ Classes without a generated loader, missing required values, or invalid env valu
 | `envy-tests` | Integration tests |
 
 ## Development
-
 Requires JDK 17+.
 
 ```bash

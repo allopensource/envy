@@ -6,3 +6,10 @@ package io.github.allopensource.envy
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class Envied()
+
+
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.SOURCE)
+annotation class EnviedDefault(
+    val defaultValue : String = ""
+)

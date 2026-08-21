@@ -1,11 +1,13 @@
 package io.github.allopensource.envy.tests
 
 import io.github.allopensource.envy.Envy
+import io.github.allopensource.envy.EnvyConfigurationException
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import java.io.File
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -22,7 +24,7 @@ class IntegrationTests {
 
         ).listFiles()?.count()
         assertNotNull(generatedFiles, "Distinct environment files should be generated")
-        assertTrue(generatedFiles == 3, "Three distinct environment files should be generated")
+        assertTrue(generatedFiles == 7, "Three distinct environment files should be generated")
 
     }
 
@@ -47,48 +49,29 @@ class IntegrationTests {
 
         val primitiveConfig = Envy.load<PrimitiveConfig>()
 
-        val string = primitiveConfig.string
-        val int = primitiveConfig.int
-        val long = primitiveConfig.long
-        val double = primitiveConfig.double
-        val float = primitiveConfig.float
-        val boolean = primitiveConfig.boolean
-        val byte = primitiveConfig.byte
-        val char = primitiveConfig.char
-        val short = primitiveConfig.short
-        val nullString = primitiveConfig.nullString
-        val nullInt = primitiveConfig.nullInt
-        val nullLong = primitiveConfig.nullLong
-        val nullDouble = primitiveConfig.nullDouble
-        val nullFloat = primitiveConfig.nullFloat
-        val nullBoolean = primitiveConfig.nullBoolean
-        val nullByte = primitiveConfig.nullByte
-        val nullChar = primitiveConfig.nullChar
-        val nullShort = primitiveConfig.nullShort
-
-        assertTrue(string == "I am a string.")
-        assertTrue(int == 1)
-        assertTrue(long == 1L)
-        assertTrue(double == 1.0)
-        assertTrue(float == 1.0F)
-        assertTrue(boolean)
-        assertTrue(byte == Byte.MAX_VALUE)
-        assertTrue(char == 'a')
-        assertTrue(short == 1.toShort())
-        assertTrue(nullString == "I am not a null string.")
-        assertNull(nullInt)
-        assertNull(nullLong)
-        assertNull(nullDouble)
-        assertNull(nullFloat)
-        assertNull(nullBoolean)
-        assertNull(nullByte)
-        assertNull(nullChar)
-        assertNull(nullShort)
+        assertTrue(primitiveConfig.string == "I am a string.")
+        assertTrue(primitiveConfig.int == 1)
+        assertTrue(primitiveConfig.long == 1L)
+        assertTrue(primitiveConfig.double == 1.0)
+        assertTrue(primitiveConfig.float == 1.0F)
+        assertTrue(primitiveConfig.boolean)
+        assertTrue(primitiveConfig.byte == Byte.MAX_VALUE)
+        assertTrue(primitiveConfig.char == 'a')
+        assertTrue(primitiveConfig.short == 1.toShort())
+        assertTrue(primitiveConfig.nullString == "I am not a null string.")
+        assertNull(primitiveConfig.nullInt)
+        assertNull(primitiveConfig.nullLong)
+        assertNull(primitiveConfig.nullDouble)
+        assertNull(primitiveConfig.nullFloat)
+        assertNull(primitiveConfig.nullBoolean)
+        assertNull(primitiveConfig.nullByte)
+        assertNull(primitiveConfig.nullChar)
+        assertNull(primitiveConfig.nullShort)
     }
 
     @Test
-    fun `IllegalStateException for missing loaders`() {
-        assertThrows<IllegalStateException> { Envy.load<NotEnviedConfig>() }
+    fun `EnvyConfigurationException for missing loaders`() {
+        assertThrows<EnvyConfigurationException> { Envy.load<NotEnviedConfig>() }
     }
 
     @Test
@@ -104,5 +87,48 @@ class IntegrationTests {
         val primitiveConfigSecond = Envy.load<PrimitiveConfig>()
         assertTrue(primitiveConfigFirst == primitiveConfigSecond)
     }
+
+    @Test
+    fun `environment variables overrides default values` () {
+        val primitiveConfig = Envy.load<PrimitiveConfigWithDefaultValuesAndEnvVariables>()
+        assertTrue(primitiveConfig.string == "I am a string.")
+        assertTrue(primitiveConfig.int == 1)
+        assertTrue(primitiveConfig.long == 1L)
+        assertTrue(primitiveConfig.double == 1.0)
+        assertTrue(primitiveConfig.float == 1.0F)
+        assertTrue(primitiveConfig.boolean)
+        assertTrue(primitiveConfig.byte == Byte.MAX_VALUE)
+        assertTrue(primitiveConfig.char == 'a')
+    }
+
+    @Test
+    fun `default values` () {
+        val primitiveConfig = Envy.load<PrimitiveConfigWithDefaultValues>()
+        assertTrue(primitiveConfig.sstring == "I am a default string")
+        assertTrue(primitiveConfig.iint == 2)
+        assertTrue(primitiveConfig.llong == 2L)
+        assertTrue(primitiveConfig.ddouble == 2.0)
+        assertTrue(primitiveConfig.ffloat == 2.0F)
+        assertTrue(primitiveConfig.sshort == 2.toShort())
+        assertFalse (primitiveConfig.bboolean)
+        assertTrue(primitiveConfig.bbyte == Byte.MIN_VALUE)
+        assertTrue(primitiveConfig.cchar == 'z')
+    }
+
+
+    @Test
+    fun `EnvyConfigurationException for missing default and env variables`() {
+        assertThrows<EnvyConfigurationException> {
+            Envy.load<MissingDefaultAndEnvVariables>()
+        }
+    }
+
+    @Test
+    fun `EnvyConfigurationException for incorrect env values`() {
+        assertThrows<EnvyConfigurationException> {
+            Envy.load<PrimitiveConfigWithIncorrectEnvValue>()
+        }
+    }
+
 
 }
