@@ -54,14 +54,6 @@ subprojects {
             }
         }
     }
-
-    plugins.withType<JavaLibraryPlugin> {
-
-        extensions.configure<JavaPluginExtension> {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 repositories {
