@@ -9,7 +9,6 @@ dependencies {
     ksp(project(":envy-ksp"))
 
     testImplementation(kotlin("test"))
-    testImplementation("com.google.devtools.ksp:symbol-processing-api:2.2.0-2.0.2")
     testImplementation("io.mockk:mockk:1.14.11")
 
     tasks.test {

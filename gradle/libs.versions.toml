@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.2.0"
-ksp = "2.2.0-2.0.2"
+ksp = "2.3.11"
 junit = "5.13.4"
 ktlint = "14.2.0"
 
