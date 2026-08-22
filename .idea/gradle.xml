@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/envy-tests" />
           </set>
         </option>
-        <option name="myGradleHome" value="/usr/local/Cellar/gradle/9.6.1/libexec" />
       </GradleProjectSettings>
     </option>
   </component>
