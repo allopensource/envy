@@ -3,6 +3,8 @@
 </p>
 <h1 align="center">Type-safe, reflection-free environment configuration for Kotlin, powered by KSP.</h1>
 
+**Website:** [allopensource.github.io/envy](https://allopensource.github.io/envy)
+
 ### Usage: Super simple and easy to use.
 
 Assuming the following environment variables.
@@ -37,7 +39,7 @@ val config = Envy.load<AppConfig>()
 
 ```kotlin
 plugins {
-    id("com.google.devtools.ksp") version "2.2.0-2.0.2" // to enable KSP
+    id("com.google.devtools.ksp") // to enable KSP
 }
 
 dependencies {

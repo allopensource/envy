@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Envy — Type-Safe, Reflection-Free Environment Configuration for Kotlin | KSP</title>
+  <meta name="description" content="Envy is a Kotlin library for loading environment variables into type-safe configuration classes. Compile-time code generation with KSP — no reflection at runtime. Supports defaults, nullable types, and singleton caching.">
+  <meta name="keywords" content="Kotlin environment variables, type-safe configuration Kotlin, KSP Kotlin Symbol Processing, reflection-free configuration, Envy Kotlin library, JVM configuration, compile-time code generation, Kotlin backend, environment configuration, @Envied, ServiceLoader Kotlin, Kotlin KSP processor, Kotlin primitives config, application configuration Kotlin">
+  <meta name="author" content="Sumit Ponia">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://allopensource.github.io/envy/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://allopensource.github.io/envy/">
+  <meta property="og:title" content="Envy — Type-Safe Environment Configuration for Kotlin">
+  <meta property="og:description" content="Load environment variables into Kotlin data classes with compile-time KSP code generation. No reflection. Explicit defaults. Type-safe.">
+  <meta property="og:image" content="https://allopensource.github.io/envy/assets/logo.png">
+  <meta property="og:site_name" content="Envy">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Envy — Type-Safe Environment Configuration for Kotlin">
+  <meta name="twitter:description" content="Kotlin library for type-safe, reflection-free environment configuration powered by KSP.">
+  <meta name="twitter:image" content="https://allopensource.github.io/envy/assets/logo.png">
+
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Envy",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cross-platform",
+    "description": "Type-safe, reflection-free environment configuration library for Kotlin, powered by KSP compile-time code generation.",
+    "url": "https://allopensource.github.io/envy/",
+    "downloadUrl": "https://github.com/allopensource/envy",
+    "softwareVersion": "0.1.0",
+    "license": "https://opensource.org/licenses/MIT",
+    "programmingLanguage": "Kotlin",
+    "author": {
+      "@type": "Person",
+      "name": "Sumit Ponia"
+    },
+    "codeRepository": "https://github.com/allopensource/envy",
+    "keywords": "Kotlin, KSP, environment variables, type-safe configuration, reflection-free"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Primary">
+      <a class="nav-brand" href="/envy/">
+        <img src="assets/logo.png" alt="Envy logo" width="36" height="36">
+        <span>Envy</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="nav-menu" class="nav-menu">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="https://github.com/allopensource/envy" class="nav-github" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <p class="eyebrow">Kotlin · KSP · Environment Configuration</p>
+          <h1>Type-safe, reflection-free environment configuration for Kotlin</h1>
+          <p class="hero-lead">
+            Stop hand-rolling <code>System.getenv()</code> calls, string parsing, and default-value logic.
+            <strong>Envy</strong> loads environment variables into ordinary Kotlin classes — with compile-time code generation and zero reflection at runtime.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#quickstart">Get Started</a>
+            <a class="btn btn-secondary" href="https://github.com/allopensource/envy" rel="noopener noreferrer">View on GitHub</a>
+          </div>
+          <p class="hero-meta">
+            <span>MIT License</span>
+            <span>JDK 17+</span>
+            <span>v0.1.0</span>
+          </p>
+        </div>
+        <div class="hero-visual">
+          <img src="assets/logo.png" alt="Envy — Kotlin environment configuration library" width="320" height="320">
+        </div>
+      </div>
+    </section>
+
+    <section class="problem section" aria-labelledby="problem-heading">
+      <div class="container narrow">
+        <h2 id="problem-heading">Configuration looks simple — until your app grows</h2>
+        <p>
+          A few environment variables are easy enough:
+        </p>
+        <pre class="code-block"><code><span class="tok-keyword">val</span> databaseUrl = System.getenv(<span class="tok-string">"databaseUrl"</span>)
+<span class="tok-keyword">val</span> port = System.getenv(<span class="tok-string">"port"</span>)?.toInt()</code></pre>
+        <p>
+          But as configuration grows, this approach becomes repetitive. You end up converting strings, handling missing values,
+          defining defaults, validating configuration, and wiring everything together yourself.
+        </p>
+        <p>
+          <strong>Envy</strong> gives Kotlin applications a simpler path: declare a configuration class, annotate it, and load it in one line.
+        </p>
+      </div>
+    </section>
+
+    <section id="features" class="features section" aria-labelledby="features-heading">
+      <div class="container">
+        <h2 id="features-heading">Why use Envy for Kotlin environment configuration?</h2>
+        <p class="section-intro">
+          A small, focused library for JVM and Kotlin backends that need reliable, type-safe access to environment variables.
+        </p>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Compile-time KSP generation</h3>
+            <p>Kotlin Symbol Processing (KSP) generates loader classes at build time. No reflection, no magic — inspect generated code in <code>build/generated/ksp</code>.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Type-safe primitives</h3>
+            <p>Supports <code>String</code>, <code>Int</code>, <code>Long</code>, <code>Double</code>, <code>Float</code>, <code>Boolean</code>, <code>Byte</code>, <code>Short</code>, and <code>Char</code> with compile-time parsing.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Explicit defaults</h3>
+            <p>Use <code>@EnviedDefault</code> for fallback values when an environment variable is unset. Defaults are always explicit — no hidden constructor defaults.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Nullable properties</h3>
+            <p>Optional configuration? Declare nullable types. Envy resolves unset variables to <code>null</code> when no default is provided.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Singleton caching</h3>
+            <p><code>Envy.load()</code> can be called anywhere in your application. Repeated calls return the same cached configuration instance.</p>
+          </article>
+          <article class="feature-card">
+            <h3>ServiceLoader discovery</h3>
+            <p>Generated loaders register via Java <code>ServiceLoader</code>. Runtime discovery is transparent and reflection-free.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="quickstart" class="quickstart section" aria-labelledby="quickstart-heading">
+      <div class="container">
+        <h2 id="quickstart-heading">Quick start: load environment variables in Kotlin</h2>
+        <p class="section-intro">Add Envy to your Gradle project and define a configuration class in three steps.</p>
+
+        <div class="steps">
+          <article class="step">
+            <span class="step-number">1</span>
+            <div>
+              <h3>Add dependencies</h3>
+              <p>Enable KSP and add the runtime library plus the compile-time processor.</p>
+              <pre class="code-block"><code><span class="tok-comment">// build.gradle.kts</span>
+plugins {
+    id(<span class="tok-string">"com.google.devtools.ksp"</span>) version <span class="tok-string">"2.3.11"</span>
+}
+
+dependencies {
+    implementation(<span class="tok-string">"io.github.allopensource:envy:0.1.0"</span>)
+    ksp(<span class="tok-string">"io.github.allopensource:envy-ksp:0.1.0"</span>)
+}</code></pre>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-number">2</span>
+            <div>
+              <h3>Declare your configuration class</h3>
+              <p>Annotate a class with <code>@Envied</code>. Property names map directly to environment variable names.</p>
+              <pre class="code-block"><code><span class="tok-annotation">@Envied</span>
+<span class="tok-keyword">class</span> <span class="tok-type">AppConfig</span>(
+    <span class="tok-keyword">val</span> databaseUrl: <span class="tok-type">String</span>,
+    <span class="tok-keyword">val</span> port: <span class="tok-type">Int</span>,
+    <span class="tok-annotation">@EnviedDefault</span>(<span class="tok-string">"false"</span>)
+    <span class="tok-keyword">val</span> debug: <span class="tok-type">Boolean</span>,
+    <span class="tok-keyword">val</span> apiKey: <span class="tok-type">String</span>?,
+)</code></pre>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-number">3</span>
+            <div>
+              <h3>Load at runtime</h3>
+              <p>One call. Type-safe. Cached.</p>
+              <pre class="code-block"><code><span class="tok-keyword">import</span> io.github.allopensource.envy.Envy
+
+<span class="tok-keyword">val</span> config = Envy.load&lt;<span class="tok-type">AppConfig</span>&gt;()
+<span class="tok-comment">// databaseUrl from env, port from env, debug from @EnviedDefault, apiKey nullable</span></code></pre>
+            </div>
+          </article>
+        </div>
+
+        <div class="resolution-box">
+          <h3>Resolution order</h3>
+          <p>For each property, Envy resolves values in this order:</p>
+          <ol>
+            <li><strong>Environment variable</strong> — <code>System.getenv(propertyName)</code> when set</li>
+            <li><strong>@EnviedDefault</strong> — compile-time default when the variable is unset</li>
+            <li><strong>null</strong> — for nullable properties with no env var and no default</li>
+          </ol>
+          <p class="note">
+            Non-null properties without an environment variable or <code>@EnviedDefault</code> throw
+            <code>EnvyConfigurationException</code> at runtime. Invalid values (e.g. a non-numeric string for <code>Int</code>) also throw.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="internals section" aria-labelledby="internals-heading">
+      <div class="container">
+        <h2 id="internals-heading">How Envy works: KSP loaders and ServiceLoader</h2>
+        <div class="internals-grid">
+          <article>
+            <h3>Compile time — KSP generates loaders</h3>
+            <p>
+              KSP scans classes annotated with <code>@Envied</code> and generates an <code>EnvyLoader</code> implementation per class.
+              The loader reads environment variables and constructs your configuration object. Entries are added to
+              <code>META-INF/services/io.github.allopensource.envy.EnvyLoader</code>.
+            </p>
+            <pre class="code-block code-block-sm"><code><span class="tok-comment">// Generated by envy-ksp</span>
+<span class="tok-keyword">class</span> <span class="tok-type">EnvyLoaderForAppConfig</span> : EnvyLoader&lt;<span class="tok-type">AppConfig</span>&gt; {
+    <span class="tok-keyword">override val</span> type = AppConfig::<span class="tok-keyword">class</span>
+
+    <span class="tok-keyword">override fun</span> load(): <span class="tok-type">AppConfig</span> {
+        <span class="tok-keyword">return</span> AppConfig(
+            databaseUrl = System.getenv(<span class="tok-string">"databaseUrl"</span>)!!,
+            port = System.getenv(<span class="tok-string">"port"</span>)!!.toInt(),
+            debug = <span class="tok-literal">false</span>,
+            apiKey = <span class="tok-literal">null</span>,
+        )
+    }
+}</code></pre>
+          </article>
+          <article>
+            <h3>Runtime — reflection-free discovery</h3>
+            <p>
+              <code>Envy</code> discovers loaders via Java's <code>ServiceLoader</code> on startup.
+              When you call <code>Envy.load&lt;AppConfig&gt;()</code>, the matching loader is used to construct the instance.
+              The result is cached so repeated loads are free.
+            </p>
+            <p>
+              The runtime (<code>envy</code>) and compile-time (<code>envy-ksp</code>) components are deliberately separated —
+              your application only needs the processor at build time.
+            </p>
+            <ul class="module-list">
+              <li><code>envy</code> — runtime API (<code>@Envied</code>, <code>@EnviedDefault</code>, <code>Envy</code>, <code>EnvyLoader</code>)</li>
+              <li><code>envy-ksp</code> — KSP processor that generates loaders</li>
+              <li><code>envy-tests</code> — integration tests</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap" class="roadmap section" aria-labelledby="roadmap-heading">
+      <div class="container narrow">
+        <h2 id="roadmap-heading">What's next for Envy</h2>
+        <p>Envy is actively evolving. Planned improvements include:</p>
+        <ul class="roadmap-list">
+          <li>Support for more types and complex properties</li>
+          <li>Better configuration validation</li>
+          <li>Flexible environment-variable naming (e.g. custom env var names per property)</li>
+          <li>Nested configuration classes</li>
+        </ul>
+        <p>
+          Read the launch post:
+          <a href="https://medium.com/@sumitponia26/revisiting-environment-configuration-for-kotlin-de91a410091d" rel="noopener noreferrer">
+            Revisiting environment configuration for Kotlin
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <section class="cta section" aria-labelledby="cta-heading">
+      <div class="container cta-box">
+        <h2 id="cta-heading">Try Envy in your Kotlin project</h2>
+        <p>Star the repo, open an issue, or share how you're using type-safe environment configuration.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/allopensource/envy" rel="noopener noreferrer">GitHub Repository</a>
+          <a class="btn btn-secondary" href="https://github.com/allopensource/envy/issues" rel="noopener noreferrer">Report an Issue</a>
+          <a class="btn btn-secondary" href="https://github.com/allopensource/envy/discussions" rel="noopener noreferrer">Discussions</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-brand">Envy</p>
+        <p class="footer-tagline">Type-safe, reflection-free environment configuration for Kotlin.</p>
+      </div>
+      <div>
+        <p class="footer-heading">Links</p>
+        <ul class="footer-links">
+          <li><a href="https://github.com/allopensource/envy">GitHub</a></li>
+          <li><a href="https://github.com/allopensource/envy/blob/main/README.md">Documentation</a></li>
+          <li><a href="https://medium.com/@sumitponia26/revisiting-environment-configuration-for-kotlin-de91a410091d">Medium Article</a></li>
+          <li><a href="https://github.com/allopensource/envy/blob/main/LICENSE">MIT License</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">Keywords</p>
+        <p class="footer-keywords">Kotlin environment variables · KSP · type-safe config · reflection-free · JVM configuration · compile-time code generation</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Envy contributors. Licensed under the MIT License.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
