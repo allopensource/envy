@@ -20,7 +20,7 @@ object Envy {
     @PublishedApi
     internal fun <T : Any> load(type: KClass<T>): T {
         val loader = loaders[type]
-            ?: throw EnvyConfigurationException("No loader found for $type")
+            ?: throw EnvyLoaderException("No loader found for $type")
 
         @Suppress("UNCHECKED_CAST")
         return configCache.computeIfAbsent(type){

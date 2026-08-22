@@ -1,7 +1,7 @@
 package io.github.allopensource.envy.tests
 
 import io.github.allopensource.envy.Envy
-import io.github.allopensource.envy.EnvyConfigurationException
+import io.github.allopensource.envy.EnvyLoaderException
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -70,8 +70,8 @@ class IntegrationTests {
     }
 
     @Test
-    fun `EnvyConfigurationException for missing loaders`() {
-        assertThrows<EnvyConfigurationException> { Envy.load<NotEnviedConfig>() }
+    fun `EnvyLoaderException for missing loaders`() {
+        assertThrows<EnvyLoaderException> { Envy.load<NotEnviedConfig>() }
     }
 
     @Test
@@ -117,15 +117,15 @@ class IntegrationTests {
 
 
     @Test
-    fun `EnvyConfigurationException for missing default and env variables`() {
-        assertThrows<EnvyConfigurationException> {
+    fun `EnvyLoaderException for missing default and env variables`() {
+        assertThrows<EnvyLoaderException> {
             Envy.load<MissingDefaultAndEnvVariables>()
         }
     }
 
     @Test
-    fun `EnvyConfigurationException for incorrect env values`() {
-        assertThrows<EnvyConfigurationException> {
+    fun `EnvyLoaderException for incorrect env values`() {
+        assertThrows<EnvyLoaderException> {
             Envy.load<PrimitiveConfigWithIncorrectEnvValue>()
         }
     }
