@@ -2,6 +2,7 @@ package io.github.allopensource.envy.tests
 
 import io.github.allopensource.envy.Envied
 import io.github.allopensource.envy.EnviedDefault
+import io.github.allopensource.envy.EnviedName
 
 @Envied
 class PrimitiveConfig (
@@ -90,4 +91,13 @@ class PrimitiveConfigWithIncorrectEnvValue(
 @Envied
 class MissingDefaultAndEnvVariables(
     val iint: Int
+)
+
+@Envied
+class ConfigWithCustomNames(
+    @EnviedName("CUSTOM_STRING")
+    val string: String,
+
+    @EnviedName("CUSTOM_INT")
+    val int: Int,
 )

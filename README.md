@@ -53,13 +53,14 @@ dependencies {
 - Compile-time code generation via KSP — no reflection at runtime
 - Supports Kotlin primitives and nullable types
 - Supports default values with `@EnviedDefault`
+- Custom environment variable names with `@EnviedName`
 - Singleton caching — repeated `load()` calls return the same instance
 
 ## Resolution order
 
 For each property, envy resolves the value in this order:
 
-1. **Environment variable** — `System.getenv(propertyName)` when set
+1. **Environment variable** — `System.getenv(propertyName)` when set (or the name from `@EnviedName` when present)
 2. **`@EnviedDefault`** — compile-time default from the annotation when the variable is unset
 3. **`null`** — for nullable properties with no environment variable set and no default value
 
@@ -79,7 +80,34 @@ For each property, envy resolves the value in this order:
 | `Short` |
 | `Char` |
 
-Environment variable names match property names exactly. Invalid values (for example, a non-numeric string for an `Int` property) also throw `EnvyConfigurationException`.
+Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property) also throw `EnvyConfigurationException`.
+
+## Custom environment variable names
+
+When your deployment environment uses conventional names like `DATABASE_URL` or `API_KEY`, annotate properties with `@EnviedName` instead of renaming Kotlin properties:
+
+```kotlin
+@Envied
+class DatabaseConfig(
+    @EnviedName("DATABASE_URL")
+    val url: String,
+
+    @EnviedName("DATABASE_POOL_SIZE")
+    @EnviedDefault("10")
+    val poolSize: Int,
+)
+```
+
+```bash
+export DATABASE_URL="postgres://localhost/mydb"
+export DATABASE_POOL_SIZE=20
+```
+
+```kotlin
+val config = Envy.load<DatabaseConfig>()
+// url = "postgres://localhost/mydb"     (from DATABASE_URL)
+// poolSize = 20                         (from DATABASE_POOL_SIZE)
+```
 
 ## Usage
 
@@ -112,7 +140,7 @@ Classes without a generated loader, missing required values, or invalid env valu
 
 | Module | Description |
 |--------|-------------|
-| `envy` | Runtime library (`@Envied`, `@EnviedDefault`, `Envy`, `EnvyLoader`) |
+| `envy` | Runtime library (`@Envied`, `@EnviedDefault`, `@EnviedName`, `Envy`, `EnvyLoader`) |
 | `envy-ksp` | KSP processor that generates loaders |
 | `envy-tests` | Integration tests |
 

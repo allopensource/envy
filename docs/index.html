@@ -144,6 +144,10 @@
             <p>Optional configuration? Declare nullable types. Envy resolves unset variables to <code>null</code> when no default is provided.</p>
           </article>
           <article class="feature-card">
+            <h3>Custom env var names</h3>
+            <p>Use <code>@EnviedName</code> when deployment variables follow a different naming convention than your Kotlin properties (e.g. <code>DATABASE_URL</code> mapped to <code>url</code>).</p>
+          </article>
+          <article class="feature-card">
             <h3>Singleton caching</h3>
             <p><code>Envy.load()</code> can be called anywhere in your application. Repeated calls return the same cached configuration instance.</p>
           </article>
@@ -208,10 +212,25 @@ dependencies {
         </div>
 
         <div class="resolution-box">
+          <h3>Custom environment variable names</h3>
+          <p>By default, property names are used as environment variable names. Use <code>@EnviedName</code> to map a property to a different variable:</p>
+          <pre class="code-block"><code><span class="tok-annotation">@Envied</span>
+<span class="tok-keyword">class</span> <span class="tok-type">DatabaseConfig</span>(
+    <span class="tok-annotation">@EnviedName</span>(<span class="tok-string">"DATABASE_URL"</span>)
+    <span class="tok-keyword">val</span> url: <span class="tok-type">String</span>,
+
+    <span class="tok-annotation">@EnviedName</span>(<span class="tok-string">"DATABASE_POOL_SIZE"</span>)
+    <span class="tok-keyword">val</span> poolSize: <span class="tok-type">Int</span>,
+)</code></pre>
+          <pre class="code-block code-block-sm"><code>DATABASE_URL=postgres://localhost/mydb
+DATABASE_POOL_SIZE=20</code></pre>
+        </div>
+
+        <div class="resolution-box">
           <h3>Resolution order</h3>
           <p>For each property, Envy resolves values in this order:</p>
           <ol>
-            <li><strong>Environment variable</strong> — <code>System.getenv(propertyName)</code> when set</li>
+            <li><strong>Environment variable</strong> — <code>System.getenv(propertyName)</code> when set, or the name from <code>@EnviedName</code> when present</li>
             <li><strong>@EnviedDefault</strong> — compile-time default when the variable is unset</li>
             <li><strong>null</strong> — for nullable properties with no env var and no default</li>
           </ol>
@@ -260,7 +279,7 @@ dependencies {
               your application only needs the processor at build time.
             </p>
             <ul class="module-list">
-              <li><code>envy</code> — runtime API (<code>@Envied</code>, <code>@EnviedDefault</code>, <code>Envy</code>, <code>EnvyLoader</code>)</li>
+              <li><code>envy</code> — runtime API (<code>@Envied</code>, <code>@EnviedDefault</code>, <code>@EnviedName</code>, <code>Envy</code>, <code>EnvyLoader</code>)</li>
               <li><code>envy-ksp</code> — KSP processor that generates loaders</li>
               <li><code>envy-tests</code> — integration tests</li>
             </ul>
@@ -276,7 +295,6 @@ dependencies {
         <ul class="roadmap-list">
           <li>Support for more types and complex properties</li>
           <li>Better configuration validation</li>
-          <li>Flexible environment-variable naming (e.g. custom env var names per property)</li>
           <li>Nested configuration classes</li>
         </ul>
         <p>

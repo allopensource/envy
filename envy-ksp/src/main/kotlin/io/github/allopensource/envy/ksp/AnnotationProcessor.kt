@@ -100,6 +100,12 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
         val props =  enviedClass.getAllProperties().joinToString(",\n                    ") { property ->
 
             val name = property.simpleName.asString()
+            val envVarName = property.annotations
+                .firstOrNull { it.shortName.asString() == "EnviedName" }
+                ?.arguments
+                ?.firstOrNull { it.name?.asString() == "value" }
+                ?.value as? String
+                ?: name
             val type = property.type.resolve().declaration.qualifiedName?.asString()
             val isNullable = property.type.resolve().isMarkedNullable
             val defaultValue = property.annotations
@@ -111,84 +117,84 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
             val rhs = when (type) {
                 "kotlin.String" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name") ?: "$defaultValue" """
+                        """System.getenv("$envVarName") ?: "$defaultValue" """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")"""
+                        """System.getenv("$envVarName")"""
                     } else
-                        """System.getenv("$name")!!"""
+                        """System.getenv("$envVarName")!!"""
 
                 "kotlin.Int" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toInt() ?: ${defaultValue.toInt()} """
+                        """System.getenv("$envVarName")?.toInt() ?: ${defaultValue.toInt()} """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toInt()"""
+                        """System.getenv("$envVarName")?.toInt()"""
                     } else
-                        """System.getenv("$name")!!.toInt()"""
+                        """System.getenv("$envVarName")!!.toInt()"""
 
                 "kotlin.Long" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toLong() ?: $defaultValue """
+                        """System.getenv("$envVarName")?.toLong() ?: $defaultValue """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toLong()"""
+                        """System.getenv("$envVarName")?.toLong()"""
                     } else
-                        """System.getenv("$name")!!.toLong()"""
+                        """System.getenv("$envVarName")!!.toLong()"""
 
                 "kotlin.Boolean" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toBoolean() ?: ${defaultValue.toBoolean()} """
+                        """System.getenv("$envVarName")?.toBoolean() ?: ${defaultValue.toBoolean()} """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toBoolean()"""
+                        """System.getenv("$envVarName")?.toBoolean()"""
                     } else
-                        """System.getenv("$name")!!.toBoolean()"""
+                        """System.getenv("$envVarName")!!.toBoolean()"""
 
                 "kotlin.Double" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toDouble() ?: ${defaultValue.toDouble()} """
+                        """System.getenv("$envVarName")?.toDouble() ?: ${defaultValue.toDouble()} """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toDouble()"""
+                        """System.getenv("$envVarName")?.toDouble()"""
                     } else
-                        """System.getenv("$name")!!.toDouble()"""
+                        """System.getenv("$envVarName")!!.toDouble()"""
 
                 "kotlin.Float" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toFloat() ?: $defaultValue """
+                        """System.getenv("$envVarName")?.toFloat() ?: $defaultValue """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toFloat()"""
+                        """System.getenv("$envVarName")?.toFloat()"""
                     } else
-                        """System.getenv("$name")!!.toFloat()"""
+                        """System.getenv("$envVarName")!!.toFloat()"""
 
                 "kotlin.Short" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toShort() ?: ${defaultValue.toShort()} """
+                        """System.getenv("$envVarName")?.toShort() ?: ${defaultValue.toShort()} """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toShort()"""
+                        """System.getenv("$envVarName")?.toShort()"""
                     } else
-                        """System.getenv("$name")!!.toShort()"""
+                        """System.getenv("$envVarName")!!.toShort()"""
 
                 "kotlin.Char" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toCharArray()?.firstOrNull() ?: '${defaultValue.toCharArray().firstOrNull()}' """
+                        """System.getenv("$envVarName")?.toCharArray()?.firstOrNull() ?: '${defaultValue.toCharArray().firstOrNull()}' """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toCharArray()?.firstOrNull()"""
+                        """System.getenv("$envVarName")?.toCharArray()?.firstOrNull()"""
                     } else
-                        """System.getenv("$name")!!.toCharArray().first()"""
+                        """System.getenv("$envVarName")!!.toCharArray().first()"""
 
                 "kotlin.Byte" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$name")?.toByte() ?: ${defaultValue.toByte()} """
+                        """System.getenv("$envVarName")?.toByte() ?: ${defaultValue.toByte()} """
                     }
                     else if (isNullable) {
-                        """System.getenv("$name")?.toByte()"""
+                        """System.getenv("$envVarName")?.toByte()"""
                     } else
-                        """System.getenv("$name")!!.toByte()"""
+                        """System.getenv("$envVarName")!!.toByte()"""
 
                 else ->
                     error("Unsupported type: $type")

@@ -36,6 +36,8 @@ dependencies {
         environment("boolean", true)
         environment("nullString", "I am not a null string.")
         environment("incorrectInt", "I should not be a string.")
+        environment("CUSTOM_STRING", "Custom string.")
+        environment("CUSTOM_INT", 100)
     }
 
 }

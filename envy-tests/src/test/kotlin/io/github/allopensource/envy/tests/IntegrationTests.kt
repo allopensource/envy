@@ -24,7 +24,7 @@ class IntegrationTests {
 
         ).listFiles()?.count()
         assertNotNull(generatedFiles, "Distinct environment files should be generated")
-        assertTrue(generatedFiles == 7, "Three distinct environment files should be generated")
+        assertTrue(generatedFiles == 8, "Eight distinct environment files should be generated")
 
     }
 
@@ -130,5 +130,11 @@ class IntegrationTests {
         }
     }
 
+    @Test
+    fun `custom environment variable names are resolved via EnviedName`() {
+        val config = Envy.load<ConfigWithCustomNames>()
+        assertTrue(config.string == "Custom string.")
+        assertTrue(config.int == 100)
+    }
 
 }
