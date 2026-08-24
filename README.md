@@ -11,7 +11,7 @@ Assuming the following environment variables.
 ```bash
 export databaseUrl="postgres://localhost/mydb"
 export port=5432
-export apiKey="my-api-key"
+export API_KEY="my-api-key"
 ```
 
 1. Declare a configuration class with the environment variables and annotate it with envy annotations.
@@ -22,6 +22,7 @@ class AppConfig(
     val port: Int,
     @EnviedDefault("false")
     val debug: Boolean,
+    @EnviedName("API_KEY")
     val apiKey: String?,
 )
 ```
@@ -43,8 +44,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.allopensource:envy:0.1.0") // runtime component
-    ksp("io.github.allopensource:envy-ksp:0.1.0")        // compiletime component
+    implementation("io.github.allopensource:envy:0.2.0") // runtime component
+    ksp("io.github.allopensource:envy-ksp:0.2.0")        // compiletime component
 }
 ```
 
