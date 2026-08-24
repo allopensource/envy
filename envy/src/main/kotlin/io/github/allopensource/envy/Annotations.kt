@@ -13,3 +13,13 @@ annotation class Envied()
 annotation class EnviedDefault(
     val defaultValue : String = ""
 )
+
+/**
+ * Overrides the environment variable name for a property.
+ * When omitted, the property name is used as the environment variable name.
+ */
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.SOURCE)
+annotation class EnviedName(
+    val value: String
+)
