@@ -124,6 +124,26 @@ class ConfigWithNamedEnum(
 }
 
 @Envied
+class ConfigWithDefaultEnum(
+    @EnviedDefault("STRING")
+    val stringEnumDefault: Enum,
+){
+    enum class Enum {
+        STRING,
+    }
+}
+
+@Envied
+class ConfigWithIncorrectDefaultEnum(
+    @EnviedDefault("INT")
+    val stringEnumDefault: Enum,
+){
+    enum class Enum {
+        STRING,
+    }
+}
+
+@Envied
 class ConfigWithUnmappedEnum(
     val stringEnumUnmapped: Enum,
 ){

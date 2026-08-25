@@ -204,7 +204,7 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                 else -> {
                     if (isEnum) {
                         if(!defaultValue.isNullOrEmpty()) {
-                            """$type.valueOf(System.getenv("$envVarName") ?: $defaultValue )"""
+                            """$type.valueOf(System.getenv("$envVarName") ?: "$defaultValue" )"""
                         }
                         else if (isNullable) {
                             """if (System.getenv("$envVarName") == null) null else $type.valueOf(System.getenv("$envVarName"))"""

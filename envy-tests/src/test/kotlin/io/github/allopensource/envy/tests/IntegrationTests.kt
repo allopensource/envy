@@ -24,7 +24,7 @@ class IntegrationTests {
 
         ).listFiles()?.count()
         assertNotNull(generatedFiles, "Distinct envy files should be generated")
-        assertTrue(generatedFiles == 12, "Distinct envy file should be generated for each envy annotated class")
+        assertTrue(generatedFiles == 14, "Distinct envy file should be generated for each envy annotated class")
 
     }
 
@@ -148,6 +148,17 @@ class IntegrationTests {
     fun `named enums are correctly resolved`() {
         val config = Envy.load<ConfigWithNamedEnum>()
         assertTrue { config.stringEnum == ConfigWithNamedEnum.Enum.STRING }
+    }
+
+    @Test
+    fun `enums with default values correctly resolved`() {
+        val config = Envy.load<ConfigWithDefaultEnum>()
+        assertTrue { config.stringEnumDefault == ConfigWithDefaultEnum.Enum.STRING }
+    }
+
+    @Test
+    fun `EnvyLoaderException for enums with incorrect default values`() {
+        assertThrows<EnvyLoaderException> { Envy.load<ConfigWithIncorrectDefaultEnum>() }
     }
 
     @Test
