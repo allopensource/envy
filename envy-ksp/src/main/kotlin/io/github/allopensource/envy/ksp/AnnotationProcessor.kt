@@ -207,7 +207,7 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                             """$type.valueOf(System.getenv("$envVarName") ?: $defaultValue )"""
                         }
                         else if (isNullable) {
-                            """$type.valueOf(System.getenv("$envVarName"))"""
+                            """if (System.getenv("$envVarName") == null) null else $type.valueOf(System.getenv("$envVarName"))"""
                         } else
                             """$type.valueOf(System.getenv("$envVarName")!!)"""
                     }

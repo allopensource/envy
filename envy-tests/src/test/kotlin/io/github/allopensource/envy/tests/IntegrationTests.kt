@@ -23,8 +23,8 @@ class IntegrationTests {
             "generated/ksp/main/kotlin/io/github/allopensource/envy"
 
         ).listFiles()?.count()
-        assertNotNull(generatedFiles, "Distinct environment files should be generated")
-        assertTrue(generatedFiles == 9, "Eight distinct environment files should be generated")
+        assertNotNull(generatedFiles, "Distinct envy files should be generated")
+        assertTrue(generatedFiles == 12, "Distinct envy file should be generated for each envy annotated class")
 
     }
 
@@ -138,10 +138,29 @@ class IntegrationTests {
     }
 
     @Test
-    fun `enums are automatically resolved`(){
+    fun `enums are automatically resolved`() {
         val config = Envy.load<ConfigWithEnums>()
-        assertTrue { config.logLevel == ConfigWithEnums.LOGLEVEL.INFO }
+        assertTrue { config.stringOneEnum == ConfigWithEnums.Enum.STRING_ONE }
+        assertTrue { config.stringTwoEnum == ConfigWithEnums.Enum.STRING_TWO }
     }
 
+    @Test
+    fun `named enums are correctly resolved`() {
+        val config = Envy.load<ConfigWithNamedEnum>()
+        assertTrue { config.stringEnum == ConfigWithNamedEnum.Enum.STRING }
+    }
+
+    @Test
+    fun `EnvyLoaderException for unmapped enums `() {
+        assertThrows<EnvyLoaderException> {
+            Envy.load<ConfigWithUnmappedEnum>()
+        }
+    }
+
+    @Test
+    fun `nullable enums are resolved without exception`() {
+        val config = Envy.load<ConfigWithNullableEnum>()
+        assertNull(config.stringEnumNull)
+    }
 
 }

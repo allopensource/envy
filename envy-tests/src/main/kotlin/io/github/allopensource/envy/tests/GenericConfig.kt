@@ -104,11 +104,40 @@ class ConfigWithCustomNames(
 
 @Envied
 class ConfigWithEnums(
-    @EnviedName("LOG_LEVEL")
-    val logLevel: LOGLEVEL
+    val stringOneEnum: Enum,
+    val stringTwoEnum: Enum,
 ){
-    enum class LOGLEVEL{
-        INFO,
-        WARN
+    enum class Enum {
+        STRING_ONE,
+        STRING_TWO
     }
 }
+
+@Envied
+class ConfigWithNamedEnum(
+    @EnviedName("STRING_ENUM")
+    val stringEnum: Enum,
+){
+    enum class Enum {
+        STRING,
+    }
+}
+
+@Envied
+class ConfigWithUnmappedEnum(
+    val stringEnumUnmapped: Enum,
+){
+    enum class Enum {
+        STRING,
+    }
+}
+
+@Envied
+class ConfigWithNullableEnum(
+    val stringEnumNull: Enum?,
+){
+    enum class Enum {
+        STRING,
+    }
+}
+
