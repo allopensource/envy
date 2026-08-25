@@ -24,7 +24,7 @@ class IntegrationTests {
 
         ).listFiles()?.count()
         assertNotNull(generatedFiles, "Distinct environment files should be generated")
-        assertTrue(generatedFiles == 8, "Eight distinct environment files should be generated")
+        assertTrue(generatedFiles == 9, "Eight distinct environment files should be generated")
 
     }
 
@@ -136,5 +136,12 @@ class IntegrationTests {
         assertTrue(config.string == "Custom string.")
         assertTrue(config.int == 100)
     }
+
+    @Test
+    fun `enums are automatically resolved`(){
+        val config = Envy.load<ConfigWithEnums>()
+        assertTrue { config.logLevel == ConfigWithEnums.LOGLEVEL.INFO }
+    }
+
 
 }

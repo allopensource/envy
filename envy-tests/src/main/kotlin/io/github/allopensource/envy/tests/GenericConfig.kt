@@ -101,3 +101,14 @@ class ConfigWithCustomNames(
     @EnviedName("CUSTOM_INT")
     val int: Int,
 )
+
+@Envied
+class ConfigWithEnums(
+    @EnviedName("LOG_LEVEL")
+    val logLevel: LOGLEVEL
+){
+    enum class LOGLEVEL{
+        INFO,
+        WARN
+    }
+}
