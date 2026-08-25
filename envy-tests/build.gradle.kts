@@ -38,7 +38,9 @@ dependencies {
         environment("incorrectInt", "I should not be a string.")
         environment("CUSTOM_STRING", "Custom string.")
         environment("CUSTOM_INT", 100)
-        environment("LOG_LEVEL", "INFO")
+        environment("stringOneEnum", "STRING_ONE")
+        environment("stringTwoEnum", "STRING_TWO")
+        environment("STRING_ENUM", "STRING")
     }
 
 }

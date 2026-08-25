@@ -40,7 +40,7 @@
     "description": "Type-safe, reflection-free environment configuration library for Kotlin, powered by KSP compile-time code generation.",
     "url": "https://allopensource.github.io/envy/",
     "downloadUrl": "https://github.com/allopensource/envy",
-    "softwareVersion": "0.3.0",
+    "softwareVersion": "0.3.1",
     "license": "https://opensource.org/licenses/MIT",
     "programmingLanguage": "Kotlin",
     "author": {
@@ -93,7 +93,7 @@
           <p class="hero-meta">
             <span>MIT License</span>
             <span>JDK 17+</span>
-            <span>v0.3.0</span>
+            <span>v0.3.1</span>
           </p>
         </div>
         <div class="hero-visual">
@@ -176,8 +176,8 @@ plugins {
 }
 
 dependencies {
-    implementation(<span class="tok-string">"io.github.allopensource:envy:0.3.0"</span>)
-    ksp(<span class="tok-string">"io.github.allopensource:envy-ksp:0.3.0"</span>)
+    implementation(<span class="tok-string">"io.github.allopensource:envy:0.3.1"</span>)
+    ksp(<span class="tok-string">"io.github.allopensource:envy-ksp:0.3.1"</span>)
 }</code></pre>
             </div>
           </article>
@@ -226,7 +226,7 @@ dependencies {
     <span class="tok-keyword">val</span> logLevel: <span class="tok-type">LogLevel</span>,
 )</code></pre>
           <pre class="code-block code-block-sm"><code>LOG_LEVEL=INFO</code></pre>
-          <p><code>Envy.load&lt;AppConfig&gt;()</code> yields <code>LogLevel.INFO</code>. Nullable enums and <code>@EnviedDefault</code> follow the same resolution order as other property types.</p>
+          <p><code>Envy.load&lt;AppConfig&gt;()</code> yields <code>LogLevel.INFO</code>. Nullable enum properties resolve to <code>null</code> when the variable is unset and no <code>@EnviedDefault</code> is provided. With <code>@EnviedDefault</code>, the default constant name is passed to <code>valueOf()</code>.</p>
         </div>
 
         <div class="resolution-box">
@@ -254,7 +254,7 @@ DATABASE_POOL_SIZE=20</code></pre>
           </ol>
           <p class="note">
             Non-null properties without an environment variable or <code>@EnviedDefault</code> throw
-            <code>EnvyConfigurationException</code> at runtime. Invalid values (e.g. a non-numeric string for <code>Int</code>, or a string that is not a valid enum constant name) also throw.
+            <code>EnvyLoaderException</code> at runtime. Invalid values (e.g. a non-numeric string for <code>Int</code>, or a string that is not a valid enum constant name) also throw.
           </p>
         </div>
       </div>

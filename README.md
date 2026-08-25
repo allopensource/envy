@@ -44,8 +44,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.allopensource:envy:0.3.0") // runtime component
-    ksp("io.github.allopensource:envy-ksp:0.3.0")        // compiletime component
+    implementation("io.github.allopensource:envy:0.3.1") // runtime component
+    ksp("io.github.allopensource:envy-ksp:0.3.1")        // compiletime component
 }
 ```
 
@@ -65,7 +65,7 @@ For each property, envy resolves the value in this order:
 2. **`@EnviedDefault`** — compile-time default from the annotation when the variable is unset
 3. **`null`** — for nullable properties with no environment variable set and no default value
 
-⚠️ Non-null properties without an environment variable or `@EnviedDefault` cause `EnvyConfigurationException` at runtime. Generated loaders do not use Kotlin constructor default values. If a property may or may not be present in environment variables, declare it as nullable.
+⚠️ Non-null properties without an environment variable or `@EnviedDefault` cause `EnvyLoaderException` at runtime. Generated loaders do not use Kotlin constructor default values. If a property may or may not be present in environment variables, declare it as nullable.
 
 ## Supported types
 
@@ -82,7 +82,7 @@ For each property, envy resolves the value in this order:
 | `Char` |
 | Kotlin `enum class` types |
 
-Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property, or a string that is not a valid enum constant name) also throw `EnvyConfigurationException`.
+Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property, or a string that is not a valid enum constant name) throw `EnvyLoaderException` at runtime.
 
 ## Enum properties
 
@@ -111,7 +111,16 @@ val config = Envy.load<AppConfig>()
 // logLevel = LogLevel.INFO   (from LOG_LEVEL)
 ```
 
-Nullable enum properties and `@EnviedDefault` work the same way as other types: when the variable is unset, the default constant name is passed to `valueOf()`.
+Nullable enum properties resolve to `null` when the environment variable is unset and no `@EnviedDefault` is provided:
+
+```kotlin
+@Envied
+class AppConfig(
+    val logLevel: LogLevel?,
+)
+```
+
+With `@EnviedDefault`, the default constant name is passed to `valueOf()` when the variable is unset.
 
 ## Custom environment variable names
 
