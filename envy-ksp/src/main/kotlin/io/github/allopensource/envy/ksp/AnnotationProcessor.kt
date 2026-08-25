@@ -4,8 +4,11 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeReference
 
 class AnnotationProcessor(
     val codeGenerator: CodeGenerator,
@@ -106,6 +109,8 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                 ?.firstOrNull { it.name?.asString() == "value" }
                 ?.value as? String
                 ?: name
+            val declaration = property.type.resolve().declaration
+            val isEnum = declaration is KSClassDeclaration && declaration.classKind == ClassKind.ENUM_CLASS
             val type = property.type.resolve().declaration.qualifiedName?.asString()
             val isNullable = property.type.resolve().isMarkedNullable
             val defaultValue = property.annotations
@@ -196,8 +201,20 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                     } else
                         """System.getenv("$envVarName")!!.toByte()"""
 
-                else ->
-                    error("Unsupported type: $type")
+                else -> {
+                    if (isEnum) {
+                        if(!defaultValue.isNullOrEmpty()) {
+                            """$type.valueOf(System.getenv("$envVarName") ?: $defaultValue )"""
+                        }
+                        else if (isNullable) {
+                            """$type.valueOf(System.getenv("$envVarName"))"""
+                        } else
+                            """$type.valueOf(System.getenv("$envVarName")!!)"""
+                    }
+                    else {
+                        throw EnvyConfigurationException("Unsupported property type encountered while generating Loader : $type")
+                    }
+                }
             }
 
             "$name = $rhs"

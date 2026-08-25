@@ -44,15 +44,15 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.allopensource:envy:0.2.0") // runtime component
-    ksp("io.github.allopensource:envy-ksp:0.2.0")        // compiletime component
+    implementation("io.github.allopensource:envy:0.3.0") // runtime component
+    ksp("io.github.allopensource:envy-ksp:0.3.0")        // compiletime component
 }
 ```
 
 ## Features
 
 - Compile-time code generation via KSP — no reflection at runtime
-- Supports Kotlin primitives and nullable types
+- Supports Kotlin primitives, enums, and nullable types
 - Supports default values with `@EnviedDefault`
 - Custom environment variable names with `@EnviedName`
 - Singleton caching — repeated `load()` calls return the same instance
@@ -80,8 +80,38 @@ For each property, envy resolves the value in this order:
 | `Byte` |
 | `Short` |
 | `Char` |
+| Kotlin `enum class` types |
 
-Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property) also throw `EnvyConfigurationException`.
+Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property, or a string that is not a valid enum constant name) also throw `EnvyConfigurationException`.
+
+## Enum properties
+
+Enum properties are resolved with `Enum.valueOf()`. The environment variable value must match an enum **constant name** exactly (case-sensitive), for example `INFO` for `LogLevel.INFO`.
+
+```kotlin
+enum class LogLevel {
+    INFO,
+    WARN,
+}
+
+@Envied
+class AppConfig(
+    @EnviedName("LOG_LEVEL")
+    @EnviedDefault("WARN")
+    val logLevel: LogLevel,
+)
+```
+
+```bash
+export LOG_LEVEL=INFO
+```
+
+```kotlin
+val config = Envy.load<AppConfig>()
+// logLevel = LogLevel.INFO   (from LOG_LEVEL)
+```
+
+Nullable enum properties and `@EnviedDefault` work the same way as other types: when the variable is unset, the default constant name is passed to `valueOf()`.
 
 ## Custom environment variable names
 
@@ -114,7 +144,7 @@ val config = Envy.load<DatabaseConfig>()
 
 The class must have a primary constructor whose parameters are declared as `val` or `var` properties.
 
-Use `@EnviedDefault` on a property to supply a fallback when the corresponding environment variable is not set. The `defaultValue` is always a string and is parsed to the property type at compile time (for example `"5432"` for an `Int`, `"false"` for a `Boolean`).
+Use `@EnviedDefault` on a property to supply a fallback when the corresponding environment variable is not set. The `defaultValue` is always a string and is parsed to the property type at compile time (for example `"5432"` for an `Int`, `"false"` for a `Boolean`, `"INFO"` for a `LogLevel` enum).
 
 ### 3. Load at runtime
 

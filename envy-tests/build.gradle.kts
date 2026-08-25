@@ -38,6 +38,7 @@ dependencies {
         environment("incorrectInt", "I should not be a string.")
         environment("CUSTOM_STRING", "Custom string.")
         environment("CUSTOM_INT", 100)
+        environment("LOG_LEVEL", "INFO")
     }
 
 }

@@ -11,7 +11,7 @@ plugins {
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
-    coordinates("io.github.allopensource", "envy", "0.2.0")
+    coordinates("io.github.allopensource", "envy", "0.3.0")
 
     pom {
         name.set("envy-ksp")
