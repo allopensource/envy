@@ -161,3 +161,10 @@ class ConfigWithNullableEnum(
     }
 }
 
+@Envied
+class ConfigWithList(
+    val listOfStrings: List<String>,
+    @EnviedDefault("STRING_ONE,STRING_TWO")
+    val listOfStringsWithDefaults: List<String>,
+    val missingListOfStrings: List<String>?
+)

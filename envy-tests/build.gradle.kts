@@ -41,6 +41,7 @@ dependencies {
         environment("stringOneEnum", "STRING_ONE")
         environment("stringTwoEnum", "STRING_TWO")
         environment("STRING_ENUM", "STRING")
+        environment("listOfStrings", "STRING_ONE,STRING_TWO")
     }
 
 }
