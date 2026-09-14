@@ -166,5 +166,12 @@ class ConfigWithList(
     val listOfStrings: List<String>,
     @EnviedDefault("STRING_ONE,STRING_TWO")
     val listOfStringsWithDefaults: List<String>,
-    val missingListOfStrings: List<String>?
-)
+    val listOfStringsWithSpace: List<String>,
+    val listOfStringsWithMissingValues: List<String>,
+    val listOfStringsWithOnlyComma: List<String>,
+    val listOfStringsWithOnlyCommas: List<String>,
+    val listOfStringsWithBlankValues: List<String>,
+    val missingListOfStrings: List<String>?,
+    val listOfStringsWithIncorrectTypeA: List<String>,
+    val listOfStringsWithIncorrectTypeB: List<String>,
+    )

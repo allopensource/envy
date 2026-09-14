@@ -204,7 +204,7 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
 
                 "kotlin.collections.List" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        val defaultValueAsList  = defaultValue.split(",").joinToString(separator = ", ") { "\"$it\"" }
+                        val defaultValueAsList  = defaultValue.split(",").joinToString(separator = ", ") { "\"${it.trim()}\"" }
                         """System.getenv("$envVarName")?.split(",")?.map { it.trim() } ?: listOf($defaultValueAsList) """
                     }
                     else if (isNullable) {

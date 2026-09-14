@@ -179,6 +179,13 @@ class IntegrationTests {
         val config = Envy.load<ConfigWithList>()
         assertTrue { config.listOfStrings == listOf("STRING_ONE", "STRING_TWO") }
         assertTrue { config.listOfStringsWithDefaults == listOf("STRING_ONE", "STRING_TWO") }
-        assertNull(config.missingListOfStrings)
+        assertNull (config.missingListOfStrings)
+        assertTrue { config.listOfStringsWithSpace == listOf("STRING_ONE", "STRING_TWO") }
+        assertTrue { config.listOfStringsWithMissingValues == listOf("") }
+        assertTrue { config.listOfStringsWithOnlyComma == listOf("", "") }
+        assertTrue { config.listOfStringsWithOnlyCommas == listOf("", "", "") }
+        assertTrue { config.listOfStringsWithBlankValues == listOf("", "STRING_TWO", "") }
+        assertTrue { config.listOfStringsWithIncorrectTypeA == listOf("1") }
+        assertTrue { config.listOfStringsWithIncorrectTypeB == listOf("1.0") }
     }
 }

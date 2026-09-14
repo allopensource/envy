@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Envy — Type-Safe, Reflection-Free Environment Configuration for Kotlin | KSP</title>
-  <meta name="description" content="Envy is a Kotlin library for loading environment variables into type-safe configuration classes. Compile-time code generation with KSP — no reflection at runtime. Supports primitives, enums, defaults, nullable types, and singleton caching.">
+  <meta name="description" content="Envy is a Kotlin library for loading environment variables into type-safe configuration classes. Compile-time code generation with KSP — no reflection at runtime. Supports primitives, enums, lists of strings, defaults, nullable types, and singleton caching.">
   <meta name="keywords" content="Kotlin environment variables, type-safe configuration Kotlin, KSP Kotlin Symbol Processing, reflection-free configuration, Envy Kotlin library, JVM configuration, compile-time code generation, Kotlin backend, environment configuration, @Envied, ServiceLoader Kotlin, Kotlin KSP processor, Kotlin primitives config, Kotlin enum configuration, application configuration Kotlin">
   <meta name="author" content="Sumit Ponia">
   <meta name="robots" content="index, follow">
@@ -132,8 +132,8 @@
             <p>Kotlin Symbol Processing (KSP) generates loader classes at build time. No reflection, no magic — inspect generated code in <code>build/generated/ksp</code>.</p>
           </article>
           <article class="feature-card">
-            <h3>Type-safe primitives and enums</h3>
-            <p>Supports <code>String</code>, <code>Int</code>, <code>Long</code>, <code>Double</code>, <code>Float</code>, <code>Boolean</code>, <code>Byte</code>, <code>Short</code>, <code>Char</code>, and Kotlin <code>enum class</code> types with compile-time parsing.</p>
+            <h3>Type-safe primitives, enums, and lists</h3>
+            <p>Supports <code>String</code>, <code>Int</code>, <code>Long</code>, <code>Double</code>, <code>Float</code>, <code>Boolean</code>, <code>Byte</code>, <code>Short</code>, <code>Char</code>, Kotlin <code>enum class</code> types, and <code>List&lt;String&gt;</code>. Additional list element types will follow the same comma-separated format.</p>
           </article>
           <article class="feature-card">
             <h3>Explicit defaults</h3>
@@ -213,11 +213,7 @@ dependencies {
 
         <div class="resolution-box">
           <h3>Enum properties</h3>
-          <p>Enum properties are resolved with <code>Enum.valueOf()</code>. The environment variable value must match an enum constant name exactly (case-sensitive).</p>
-          <pre class="code-block"><code><span class="tok-keyword">enum class</span> <span class="tok-type">LogLevel</span> {
-    INFO,
-    WARN,
-}
+          <pre class="code-block"><code><span class="tok-keyword">enum class</span> <span class="tok-type">LogLevel</span> { INFO, WARN }
 
 <span class="tok-annotation">@Envied</span>
 <span class="tok-keyword">class</span> <span class="tok-type">AppConfig</span>(
@@ -226,7 +222,18 @@ dependencies {
     <span class="tok-keyword">val</span> logLevel: <span class="tok-type">LogLevel</span>,
 )</code></pre>
           <pre class="code-block code-block-sm"><code>LOG_LEVEL=INFO</code></pre>
-          <p><code>Envy.load&lt;AppConfig&gt;()</code> yields <code>LogLevel.INFO</code>. Nullable enum properties resolve to <code>null</code> when the variable is unset and no <code>@EnviedDefault</code> is provided. With <code>@EnviedDefault</code>, the default constant name is passed to <code>valueOf()</code>.</p>
+        </div>
+
+        <div class="resolution-box">
+          <h3>List properties</h3>
+          <pre class="code-block"><code><span class="tok-annotation">@Envied</span>
+<span class="tok-keyword">class</span> <span class="tok-type">AppConfig</span>(
+    <span class="tok-keyword">val</span> hosts: <span class="tok-type">List</span>&lt;<span class="tok-type">String</span>&gt;,
+    <span class="tok-annotation">@EnviedDefault</span>(<span class="tok-string">"STRING_ONE,STRING_TWO"</span>)
+    <span class="tok-keyword">val</span> tags: <span class="tok-type">List</span>&lt;<span class="tok-type">String</span>&gt;,
+    <span class="tok-keyword">val</span> extraHosts: <span class="tok-type">List</span>&lt;<span class="tok-type">String</span>&gt;?,
+)</code></pre>
+          <pre class="code-block code-block-sm"><code>hosts=STRING_ONE,STRING_TWO</code></pre>
         </div>
 
         <div class="resolution-box">
@@ -311,6 +318,7 @@ DATABASE_POOL_SIZE=20</code></pre>
         <h2 id="roadmap-heading">What's next for Envy</h2>
         <p>Envy is actively evolving. Planned improvements include:</p>
         <ul class="roadmap-list">
+          <li>Additional <code>List&lt;T&gt;</code> element types beyond <code>String</code></li>
           <li>Support for more complex property types</li>
           <li>Better configuration validation</li>
           <li>Nested configuration classes</li>

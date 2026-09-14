@@ -434,6 +434,37 @@ code {
   margin: 0 0 0.75rem;
 }
 
+.type-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.25rem;
+  font-size: 0.92rem;
+}
+
+.type-table caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.type-table th,
+.type-table td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.type-table th {
+  background: var(--bg-elevated);
+  font-weight: 600;
+}
+
+.type-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .resolution-box ol {
   margin: 0 0 1rem;
   padding-left: 1.25rem;
