@@ -94,7 +94,7 @@ A property of type `List<T>` is read from **one** environment variable. The valu
 
 `List<T>?` follows the same [resolution order](#resolution-order) as other nullable properties. See [List properties](#list-properties) for usage, defaults, and `List<String>` examples.
 
-Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property, or a string that is not a valid enum constant name) throw `EnvyLoaderException` at runtime.
+Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`).
 
 ## Enum properties
 
