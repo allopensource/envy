@@ -41,6 +41,14 @@ dependencies {
         environment("stringOneEnum", "STRING_ONE")
         environment("stringTwoEnum", "STRING_TWO")
         environment("STRING_ENUM", "STRING")
+        environment("listOfStrings", "STRING_ONE,STRING_TWO")
+        environment("listOfStringsWithSpace", "STRING_ONE, STRING_TWO")
+        environment("listOfStringsWithMissingValues", "")
+        environment("listOfStringsWithOnlyComma", ",")
+        environment("listOfStringsWithOnlyCommas", ",,")
+        environment("listOfStringsWithBlankValues", " ,STRING_TWO     , ")
+        environment("listOfStringsWithIncorrectTypeA", 1)
+        environment("listOfStringsWithIncorrectTypeB", 1.0F) // interesting test case, system.getenvironment returns 1.0 and not 1.0F as string.
     }
 
 }

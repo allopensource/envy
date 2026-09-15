@@ -111,7 +111,8 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                 ?: name
             val declaration = property.type.resolve().declaration
             val isEnum = declaration is KSClassDeclaration && declaration.classKind == ClassKind.ENUM_CLASS
-            val type = property.type.resolve().declaration.qualifiedName?.asString()
+            val resolvedType = property.type.resolve()
+            val type = resolvedType.declaration.qualifiedName?.asString()
             val isNullable = property.type.resolve().isMarkedNullable
             val defaultValue = property.annotations
                 .firstOrNull { it.shortName.asString() == "EnviedDefault" }
@@ -200,6 +201,16 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                         """System.getenv("$envVarName")?.toByte()"""
                     } else
                         """System.getenv("$envVarName")!!.toByte()"""
+
+                "kotlin.collections.List" ->
+                    if(!defaultValue.isNullOrEmpty()) {
+                        val defaultValueAsList  = defaultValue.split(",").joinToString(separator = ", ") { "\"${it.trim()}\"" }
+                        """System.getenv("$envVarName")?.split(",")?.map { it.trim() } ?: listOf($defaultValueAsList) """
+                    }
+                    else if (isNullable) {
+                        """System.getenv("$envVarName")?.split(",")?.map { it.trim() }"""
+                    } else
+                        """System.getenv("$envVarName")!!.split(",").map { it.trim() }"""
 
                 else -> {
                     if (isEnum) {

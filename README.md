@@ -52,7 +52,7 @@ dependencies {
 ## Features
 
 - Compile-time code generation via KSP — no reflection at runtime
-- Supports Kotlin primitives, enums, and nullable types
+- Supports Kotlin primitives, enums, nullable types, and lists (see [Supported types](#supported-types))
 - Supports default values with `@EnviedDefault`
 - Custom environment variable names with `@EnviedName`
 - Singleton caching — repeated `load()` calls return the same instance
@@ -69,6 +69,8 @@ For each property, envy resolves the value in this order:
 
 ## Supported types
 
+### Scalar types
+
 | Type |
 |------|
 | `String` |
@@ -76,13 +78,23 @@ For each property, envy resolves the value in this order:
 | `Long` |
 | `Double` |
 | `Float` |
-| `Boolean`
+| `Boolean` |
 | `Byte` |
 | `Short` |
 | `Char` |
 | Kotlin `enum class` types |
 
-Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`). Invalid values (for example, a non-numeric string for an `Int` property, or a string that is not a valid enum constant name) throw `EnvyLoaderException` at runtime.
+### List types
+
+A property of type `List<T>` is read from **one** environment variable. The value is split on commas; each item is then parsed according to `T`. Supported element types are listed below; more will be added over time.
+
+| `T` | Parsing |
+|-----|---------|
+| `String` | Split on `,`, then trim whitespace around each item. Items are not converted to other types. |
+
+`List<T>?` follows the same [resolution order](#resolution-order) as other nullable properties. See [List properties](#list-properties) for usage, defaults, and `List<String>` examples.
+
+Environment variable names match property names by default. Use `@EnviedName` to map a property to a different environment variable name (for example, `DATABASE_URL` instead of `url`).
 
 ## Enum properties
 
@@ -122,6 +134,52 @@ class AppConfig(
 
 With `@EnviedDefault`, the default constant name is passed to `valueOf()` when the variable is unset.
 
+## List properties
+
+Declare a `List<T>` property when one environment variable holds several values. Which `T` values envy parses is listed under [List types](#list-types).
+
+```kotlin
+@Envied
+class AppConfig(
+    val hosts: List<String>,
+
+    @EnviedDefault("STRING_ONE,STRING_TWO")
+    val tags: List<String>,
+
+    val extraHosts: List<String>?,
+)
+```
+
+```bash
+export hosts="STRING_ONE,STRING_TWO"
+```
+
+```kotlin
+val config = Envy.load<AppConfig>()
+// hosts      = ["STRING_ONE", "STRING_TWO"]   (from env)
+// tags       = ["STRING_ONE", "STRING_TWO"]   (from @EnviedDefault; env unset)
+// extraHosts = null                           (nullable, env unset)
+```
+
+`@EnviedDefault` uses the same comma-separated form. Items in both the environment value and the default are trimmed.
+
+An **empty** environment variable is set, so it is not treated as missing: it is parsed, not replaced by `@EnviedDefault` or `null`.
+
+### `List<String>` parsing
+
+| Environment value | Result |
+|-------------------|--------|
+| `STRING_ONE,STRING_TWO` | `["STRING_ONE", "STRING_TWO"]` |
+| `STRING_ONE, STRING_TWO` | `["STRING_ONE", "STRING_TWO"]` (spaces around items are trimmed) |
+| *(empty string)* | `[""]` |
+| `,` | `["", ""]` |
+| `,,` | `["", "", ""]` |
+| ` ,STRING_TWO     , ` | `["", "STRING_TWO", ""]` |
+| `1` | `["1"]` (numeric-looking values stay strings) |
+| `1.0` | `["1.0"]` (same; `System.getenv` always yields a string) |
+| *(unset, non-null property)* | `EnvyLoaderException` unless `@EnviedDefault` is present |
+| *(unset, `List<String>?`)* | `null` |
+
 ## Custom environment variable names
 
 When your deployment environment uses conventional names like `DATABASE_URL` or `API_KEY`, annotate properties with `@EnviedName` instead of renaming Kotlin properties:
@@ -153,7 +211,7 @@ val config = Envy.load<DatabaseConfig>()
 
 The class must have a primary constructor whose parameters are declared as `val` or `var` properties.
 
-Use `@EnviedDefault` on a property to supply a fallback when the corresponding environment variable is not set. The `defaultValue` is always a string and is parsed to the property type at compile time (for example `"5432"` for an `Int`, `"false"` for a `Boolean`, `"INFO"` for a `LogLevel` enum).
+Use `@EnviedDefault` on a property to supply a fallback when the corresponding environment variable is not set. The `defaultValue` is always a string and is parsed to the property type at compile time (for example `"5432"` for an `Int`, `"false"` for a `Boolean`, `"INFO"` for a `LogLevel` enum, `"STRING_ONE,STRING_TWO"` for a `List<String>`).
 
 ### 3. Load at runtime
 

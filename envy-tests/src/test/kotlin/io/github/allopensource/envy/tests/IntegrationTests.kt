@@ -24,7 +24,7 @@ class IntegrationTests {
 
         ).listFiles()?.count()
         assertNotNull(generatedFiles, "Distinct envy files should be generated")
-        assertTrue(generatedFiles == 14, "Distinct envy file should be generated for each envy annotated class")
+        assertTrue(generatedFiles == 15, "Distinct envy file should be generated for each envy annotated class")
 
     }
 
@@ -174,4 +174,18 @@ class IntegrationTests {
         assertNull(config.stringEnumNull)
     }
 
+    @Test
+    fun `comma separated values are resolved as list`() {
+        val config = Envy.load<ConfigWithList>()
+        assertTrue { config.listOfStrings == listOf("STRING_ONE", "STRING_TWO") }
+        assertTrue { config.listOfStringsWithDefaults == listOf("STRING_ONE", "STRING_TWO") }
+        assertNull (config.missingListOfStrings)
+        assertTrue { config.listOfStringsWithSpace == listOf("STRING_ONE", "STRING_TWO") }
+        assertTrue { config.listOfStringsWithMissingValues == listOf("") }
+        assertTrue { config.listOfStringsWithOnlyComma == listOf("", "") }
+        assertTrue { config.listOfStringsWithOnlyCommas == listOf("", "", "") }
+        assertTrue { config.listOfStringsWithBlankValues == listOf("", "STRING_TWO", "") }
+        assertTrue { config.listOfStringsWithIncorrectTypeA == listOf("1") }
+        assertTrue { config.listOfStringsWithIncorrectTypeB == listOf("1.0") }
+    }
 }
