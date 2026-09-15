@@ -16,7 +16,7 @@ dependencies {
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
-    coordinates("io.github.allopensource", "envy-ksp", "0.3.1")
+    coordinates("io.github.allopensource", "envy-ksp", "0.3.2")
 
     pom {
         name.set("envy-ksp")
