@@ -44,8 +44,8 @@ plugins {
 }
 
 dependencies {
-    implementation("io.github.allopensource:envy:0.3.1") // runtime component
-    ksp("io.github.allopensource:envy-ksp:0.3.1")        // compiletime component
+    implementation("io.github.allopensource:envy:0.3.2") // runtime component
+    ksp("io.github.allopensource:envy-ksp:0.3.2")        // compiletime component
 }
 ```
 
