@@ -186,12 +186,12 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
 
                 "kotlin.Char" ->
                     if(!defaultValue.isNullOrEmpty()) {
-                        """System.getenv("$envVarName")?.toCharArray()?.firstOrNull() ?: '${defaultValue.toCharArray().firstOrNull()}' """
+                        """System.getenv("$envVarName")?.single() ?: '${defaultValue.single()}' """
                     }
                     else if (isNullable) {
-                        """System.getenv("$envVarName")?.toCharArray()?.firstOrNull()"""
+                        """System.getenv("$envVarName")?.single()"""
                     } else
-                        """System.getenv("$envVarName")!!.toCharArray().first()"""
+                        """System.getenv("$envVarName")!!.single()"""
 
                 "kotlin.Byte" ->
                     if(!defaultValue.isNullOrEmpty()) {
@@ -202,16 +202,59 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
                     } else
                         """System.getenv("$envVarName")!!.toByte()"""
 
-                "kotlin.collections.List" ->
+                "kotlin.collections.List" ->{
+                    val listOfType = resolvedType.arguments
+                        .firstOrNull()
+                        ?.type
+                        ?.resolve()
+                        ?.declaration
+                        ?.qualifiedName
+                        ?.asString()
+
+                    val mapper = when (listOfType) {
+                        "kotlin.String" -> "it.trim()"
+                        "kotlin.Int" -> "it.trim().toInt()"
+                        "kotlin.Long" -> "it.trim().tolong()"
+                        "kotlin.Boolean" -> "it.trim().toBoolean()"
+                        "kotlin.Double" -> "it.trim().toDouble()"
+                        "kotlin.Float" -> "it.trim().toFloat()"
+                        "kotlin.Short" -> "it.trim().toShort()"
+                        "kotlin.Char" -> "it.trim().single()"
+                        "kotlin.Byte" -> "it.trim().toByte()"
+                        else -> throw EnvyConfigurationException(
+                            "Unsupported List element type encountered while generating Loader : $listOfType"
+                        )
+                    }
+
+                    val defaultValueAsList = defaultValue
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.split(",")
+                        ?.joinToString(separator = ", ") {
+                            when (listOfType) {
+                                "kotlin.String" -> "\"${it.trim()}\""
+                                "kotlin.Int" -> it.trim().toInt().toString()
+                                "kotlin.Long" -> "${it.trim().toLong()}L"
+                                "kotlin.Boolean" -> it.trim().toBoolean().toString()
+                                "kotlin.Float" -> "${it.trim().toFloat()}F"
+                                "kotlin.Double" -> it.trim().toDouble().toString()
+                                "kotlin.Short" -> it.trim().toShort().toString()
+                                "kotlin.Char" -> it.trim().toCharArray().firstOrNull()?.toString() ?: ""
+                                "kotlin.Byte" -> it.trim().toByte().toString()
+                                else -> throw EnvyConfigurationException(
+                                    "Unsupported List element type encountered while generating Loader : $listOfType"
+                                )
+                            }
+                        }
+
+
                     if(!defaultValue.isNullOrEmpty()) {
-                        val defaultValueAsList  = defaultValue.split(",").joinToString(separator = ", ") { "\"${it.trim()}\"" }
-                        """System.getenv("$envVarName")?.split(",")?.map { it.trim() } ?: listOf($defaultValueAsList) """
+                        """System.getenv("$envVarName")?.split(",")?.map { $mapper } ?: listOf($defaultValueAsList)"""
                     }
                     else if (isNullable) {
-                        """System.getenv("$envVarName")?.split(",")?.map { it.trim() }"""
+                        """System.getenv("$envVarName")?.split(",")?.map { $mapper }"""
                     } else
-                        """System.getenv("$envVarName")!!.split(",").map { it.trim() }"""
-
+                        """System.getenv("$envVarName")!!.split(",").map { $mapper }"""
+                }
                 else -> {
                     if (isEnum) {
                         if(!defaultValue.isNullOrEmpty()) {

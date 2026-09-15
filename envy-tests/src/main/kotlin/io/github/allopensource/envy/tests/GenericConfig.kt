@@ -162,7 +162,7 @@ class ConfigWithNullableEnum(
 }
 
 @Envied
-class ConfigWithList(
+class ConfigWithListOfStrings(
     val listOfStrings: List<String>,
     @EnviedDefault("STRING_ONE,STRING_TWO")
     val listOfStringsWithDefaults: List<String>,
@@ -173,5 +173,5 @@ class ConfigWithList(
     val listOfStringsWithBlankValues: List<String>,
     val missingListOfStrings: List<String>?,
     val listOfStringsWithIncorrectTypeA: List<String>,
-    val listOfStringsWithIncorrectTypeB: List<String>,
-    )
+    val listOfStringsWithIncorrectTypeB: List<String>
+)

@@ -175,8 +175,8 @@ class IntegrationTests {
     }
 
     @Test
-    fun `comma separated values are resolved as list`() {
-        val config = Envy.load<ConfigWithList>()
+    fun `comma separated string values are resolved as list`() {
+        val config = Envy.load<ConfigWithListOfStrings>()
         assertTrue { config.listOfStrings == listOf("STRING_ONE", "STRING_TWO") }
         assertTrue { config.listOfStringsWithDefaults == listOf("STRING_ONE", "STRING_TWO") }
         assertNull (config.missingListOfStrings)
