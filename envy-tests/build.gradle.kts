@@ -49,6 +49,16 @@ dependencies {
         environment("listOfStringsWithBlankValues", " ,STRING_TWO     , ")
         environment("listOfStringsWithIncorrectTypeA", 1)
         environment("listOfStringsWithIncorrectTypeB", 1.0F) // interesting test case, system.getenvironment returns 1.0 and not 1.0F as string.
+
+        environment("listOfIntegers", "-127,1,2,3,99,127")
+        environment("listOfIntegersWithSpace", " -127, 1,2,3, 99,127  ")
+        environment("listOfIntegersWithMissingValues", "")
+        environment("listOfIntegersWithBlankValues", " ,1     , ")
+        environment("listOfIntegersWithOnlyComma", ",")
+        environment("listOfIntegersWithOnlyCommas", ",,")
+        environment("listOfIntegersWithIncorrectTypeA", "1.0L")
+        environment("listOfIntegersWithIncorrectTypeB", "1.0F")
+        environment("listOfIntegersWithOverflow", "-128, 128")
     }
 
 }

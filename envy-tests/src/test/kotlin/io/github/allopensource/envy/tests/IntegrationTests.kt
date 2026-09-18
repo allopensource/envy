@@ -24,7 +24,7 @@ class IntegrationTests {
 
         ).listFiles()?.count()
         assertNotNull(generatedFiles, "Distinct envy files should be generated")
-        assertTrue(generatedFiles == 15, "Distinct envy file should be generated for each envy annotated class")
+        assertTrue(generatedFiles == 17, "Distinct envy file should be generated for each envy annotated class")
 
     }
 
@@ -188,4 +188,34 @@ class IntegrationTests {
         assertTrue { config.listOfStringsWithIncorrectTypeA == listOf("1") }
         assertTrue { config.listOfStringsWithIncorrectTypeB == listOf("1.0") }
     }
+
+    @Test
+    fun `comma separated int values are resolved as list`() {
+        val config = Envy.load<ConfigWithListOfIntegers>()
+        assertTrue { config.listOfIntegers == listOf(-127,1,2,3,99,127) }
+        assertTrue { config.listOfIntegersWithDefaults == listOf(123, 124) }
+        assertNull (config.missingListOfIntegers)
+        assertTrue { config.listOfIntegersWithSpace == listOf(-127,1,2,3,99,127) }
+        //assertTrue { config.listOfIntegersWithIncorrectDefaultTypeA == listOf("STRING_A") }
+        //assertTrue { config.listOfIntegersWithIncorrectDefaultTypeB == listOf("1.0F") }
+        //assertTrue { config.listOfIntegersWithIncorrectDefaultTypeC == listOf("1.0L") }
+    }
+
+    @Test
+    fun `invalid comma separated int values throws exception`() {
+        val config = Envy.load<ConfigWithListOfIntegersWithExceptions>()
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithMissingValues}
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithBlankValues }
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithOnlyComma }
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithOnlyCommas }
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithIncorrectTypeA }
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithIncorrectTypeB }
+        //assertTrue { config.listOfIntegersWithIncorrectDefaultTypeA == listOf("STRING_A") }
+        //assertTrue { config.listOfIntegersWithIncorrectDefaultTypeB == listOf("1.0F") }
+        //assertTrue { config.listOfIntegersWithIncorrectDefaultTypeC == listOf("1.0L") }
+        assertThrows<EnvyLoaderException> { config.listOfIntegersWithOverflow }
+
+    }
+
+
 }

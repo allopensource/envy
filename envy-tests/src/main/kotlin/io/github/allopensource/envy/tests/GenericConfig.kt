@@ -175,3 +175,29 @@ class ConfigWithListOfStrings(
     val listOfStringsWithIncorrectTypeA: List<String>,
     val listOfStringsWithIncorrectTypeB: List<String>
 )
+
+@Envied
+class ConfigWithListOfIntegers(
+    val listOfIntegers: List<Int>,
+    @EnviedDefault("123,124")
+    val listOfIntegersWithDefaults: List<Int>,
+    val listOfIntegersWithSpace: List<Int>,
+    val missingListOfIntegers: List<Int>?,
+    )
+
+@Envied
+class ConfigWithListOfIntegersWithExceptions(
+    val listOfIntegersWithMissingValues: List<Int>,
+    val listOfIntegersWithOnlyComma: List<Int>,
+    val listOfIntegersWithOnlyCommas: List<Int>,
+    val listOfIntegersWithBlankValues: List<Int>,
+    val listOfIntegersWithIncorrectTypeA: List<Int>,
+    val listOfIntegersWithIncorrectTypeB: List<Int>,
+    //@EnviedDefault("STRING_A")
+    //val listOfIntegersWithIncorrectDefaultTypeA: List<Int>,
+    //@EnviedDefault("1.0F")
+    //val listOfIntegersWithIncorrectDefaultTypeB: List<Int>,
+    //@EnviedDefault("1.0L")
+    //val listOfIntegersWithIncorrectDefaultTypeC: List<Int>,
+    val listOfIntegersWithOverflow: List<Int>,
+)

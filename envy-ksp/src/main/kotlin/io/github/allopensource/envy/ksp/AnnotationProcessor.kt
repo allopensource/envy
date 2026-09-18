@@ -67,7 +67,7 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
 
             }
         }.onFailure {
-            throw EnvyConfigurationException("Failed to generate envy loader. $it", it)
+            throw EnvyConfigurationException("Failed to generate envy loader. ${it.stackTraceToString()}", it)
         }
             return emptyList()
     }
@@ -91,7 +91,7 @@ class {loaderName} : EnvyLoader<{enviedClassName}> {
 
             }
         }.onFailure {
-            throw EnvyConfigurationException("Failed to generate envy service locator file in META-INF. $it", it)
+            throw EnvyConfigurationException("Failed to generate envy service locator file in META-INF. ${it.stackTraceToString()}", it)
         }.onSuccess {
             serviceFileGenerated = true
         }
